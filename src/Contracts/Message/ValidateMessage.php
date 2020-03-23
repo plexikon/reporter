@@ -2,7 +2,7 @@
 
 namespace Plexikon\Reporter\Contracts\Message;
 
-interface ValidateMessage
+interface ValidateMessage extends Messaging
 {
     /**
      * Fetch laravel rules

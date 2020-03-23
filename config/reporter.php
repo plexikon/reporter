@@ -39,6 +39,7 @@ return [
     ],
 
     'middleware' => [
+        \Plexikon\Reporter\Publisher\Middleware\PublisherExceptionMiddleware::class,
         \Plexikon\Reporter\Publisher\Middleware\DefaultChainMessageDecoratorMiddleware::class,
     ],
 
@@ -54,7 +55,9 @@ return [
                 'message' => [
                     'decorator' => []
                 ],
-                'middleware' => [],
+                'middleware' => [
+                    \Plexikon\Reporter\Publisher\Middleware\CommandValidationMiddleware::class,
+                ],
                 'map' => []
             ]
         ],
