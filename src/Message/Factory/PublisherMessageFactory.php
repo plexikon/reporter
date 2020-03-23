@@ -21,7 +21,7 @@ final class PublisherMessageFactory implements MessageFactory
         assert(!is_string($message), 'Dispatching string message is not allowed');
 
         if (is_array($message)) {
-            $message = $this->messageSerializer->unserializePayload($message);
+            $message = $this->messageSerializer->unserializePayload($message)->current();
         }
 
         assert(is_object($message), 'Message can be an array, an object or an instance of ' . Message::class);

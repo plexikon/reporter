@@ -66,7 +66,7 @@ class PublisherManager
 
         $middleware = array_merge(
             $this->createPublisherMiddleware($pubConfig),
-            $this->createRoutableMiddleware($pubConfig)
+            [$this->createRoutableMiddleware($pubConfig)]
         );
 
         return $this->resolvePublisher($publisherAbstract, $middleware);
@@ -95,12 +95,13 @@ class PublisherManager
             $publisherConfig['middleware'] ?? []
         );
 
+
         foreach ($middleware as &$_middleware) {
             if ($_middleware === DefaultChainMessageDecoratorMiddleware::class) {
                 $_middleware = $this->createChainMessageDecorator($publisherConfig);
+            }else{
+                $_middleware = $this->app->make($_middleware);
             }
-
-            $_middleware = $this->app->make($_middleware);
         }
 
         return $middleware;

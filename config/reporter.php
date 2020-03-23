@@ -7,6 +7,8 @@ return [
 
         'serializer' => \Plexikon\Reporter\Message\Serializer\DefaultMessageSerializer::class,
 
+        'payload_serializer' => \Plexikon\Reporter\Message\Serializer\DefaultPayloadSerializer::class,
+
         'alias' => \Plexikon\Reporter\Message\Alias\DefaultMessageAlias::class,
 
         'decorator' => [

@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Plexikon\Reporter\Contracts\Message\MessageAlias;
 use Plexikon\Reporter\Contracts\Message\MessageFactory;
 use Plexikon\Reporter\Contracts\Message\MessageSerializer;
+use Plexikon\Reporter\Contracts\Message\PayloadSerializer;
 
 class ReporterServiceProvider extends ServiceProvider
 {
@@ -33,6 +34,7 @@ class ReporterServiceProvider extends ServiceProvider
 
         $this->app->bindIf(MessageAlias::class, $config['alias']);
         $this->app->bindIf(MessageSerializer::class, $config['serializer']);
+        $this->app->bindIf(PayloadSerializer::class, $config['payload_serializer']);
         $this->app->bindIf(MessageFactory::class, $config['factory']);
 
         $this->app->singleton(PublisherManager::class);
