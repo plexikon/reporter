@@ -1,0 +1,48 @@
+{
+    "name": "plexikon/reporter",
+    "description": "cqrs ddd",
+    "keywords": [],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "steph bug",
+            "email": "plexikon@protonmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4",
+        "beberlei/assert": "^3.2",
+        "marc-mabe/php-enum": "^4.2",
+        "ramsey/uuid": "^3.9",
+        "react/promise": "^2.7"
+    },
+    "require-dev": {
+        "laravel/framework": "^7.2",
+        "phpstan/phpstan": "^0.12",
+        "phpunit/phpunit": "^8.5",
+        "roave/security-advisories": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Plexikon\\Reporter\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Plexikon\\Reporter\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Plexikon\\Reporter\\Manager\\ReporterServiceProvider"
+            ]
+        }
+    }
+}

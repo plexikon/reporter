@@ -1,0 +1,16 @@
+<?php
+declare(strict_types=1);
+
+namespace Plexikon\Reporter\Publisher\Router;
+
+use Generator;
+
+final class MultipleHandlersRouter extends PublisherRouter
+{
+    protected function generateMessageHandler(array $messageHandlers): Generator
+    {
+        foreach ($messageHandlers as $messageHandler) {
+            yield from $this->messageHandlerToCallable($messageHandler);
+        }
+    }
+}
