@@ -30,12 +30,12 @@ class ReporterServiceProvider extends ServiceProvider
 
     protected function registerMessageFactories(): void
     {
-        $config = config('reporter.message');
+        $message = config('reporter.message');
 
-        $this->app->bindIf(MessageAlias::class, $config['alias']);
-        $this->app->bindIf(MessageSerializer::class, $config['serializer']);
-        $this->app->bindIf(PayloadSerializer::class, $config['payload_serializer']);
-        $this->app->bindIf(MessageFactory::class, $config['factory']);
+        $this->app->bindIf(MessageAlias::class, $message['alias']);
+        $this->app->bindIf(MessageSerializer::class, $message['serializer']);
+        $this->app->bindIf(PayloadSerializer::class, $message['payload_serializer']);
+        $this->app->bindIf(MessageFactory::class, $message['factory']);
 
         $this->app->singleton(PublisherManager::class);
     }
@@ -43,7 +43,7 @@ class ReporterServiceProvider extends ServiceProvider
     public function provides(): array
     {
         return [
-            MessageAlias::class, MessageSerializer::class, MessageFactory::class,
+            MessageAlias::class, MessageSerializer::class, PayloadSerializer::class, MessageFactory::class,
             PublisherManager::class
         ];
     }

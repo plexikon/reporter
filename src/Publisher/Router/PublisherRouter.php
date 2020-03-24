@@ -8,6 +8,7 @@ use Generator;
 use Illuminate\Contracts\Container\Container;
 use Plexikon\Reporter\Contracts\Message\MessageAlias;
 use Plexikon\Reporter\Contracts\Publisher\PubRouter;
+use Plexikon\Reporter\Exception\PublisherFailure;
 use Plexikon\Reporter\Message\Message;
 
 abstract class PublisherRouter implements PubRouter
@@ -41,7 +42,7 @@ abstract class PublisherRouter implements PubRouter
     {
         if (is_string($messageHandler)) {
             if (!$this->container) {
-                throw new \RuntimeException("no container");
+                throw PublisherFailure::missingContainerForMessageHandler($messageHandler);
             }
 
             $messageHandler = $this->container->make($messageHandler);
@@ -55,7 +56,7 @@ abstract class PublisherRouter implements PubRouter
             return Closure::fromCallable([$messageHandler, $this->callableMethod]);
         }
 
-        throw new \RuntimeException("unsupported message handler");
+        throw PublisherFailure::unsupportedMessageHandler($messageHandler);
     }
 
     private function determineMessageHandler(Message $message): array
@@ -63,7 +64,7 @@ abstract class PublisherRouter implements PubRouter
         $messageAlias = $this->messageAlias->instanceToAlias($message->event());
 
         if (!$messageHandlers = $this->map[$messageAlias] ?? false) {
-            throw new \RuntimeException("nto found");
+            throw PublisherFailure::messageNameNotFoundInMap($messageAlias);
         }
 
         if (!is_array($messageHandlers)) {

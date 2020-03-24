@@ -39,6 +39,21 @@ class PublisherManager
         $this->app = $app;
     }
 
+    public function command(string $name = null): Publisher
+    {
+        return $this->make($name ?? 'default', 'command');
+    }
+
+    public function query(string $name = null): Publisher
+    {
+        return $this->make($name ?? 'default', 'query');
+    }
+
+    public function event(string $name = null): Publisher
+    {
+        return $this->make($name ?? 'default', 'event');
+    }
+
     public function make(string $publisherName, string $messageType): Publisher
     {
         $publisherKey = $messageType . '-' . $publisherName;
@@ -61,7 +76,7 @@ class PublisherManager
         $publisherAbstract = $pubConfig['publisher'];
 
         if (!class_exists($publisherAbstract) && !$this->app->bound($publisherAbstract)) {
-            throw new RuntimeException("invalid publisher $publisherAbstract");
+            throw new RuntimeException("Invalid publisher service $publisherAbstract");
         }
 
         $middleware = array_merge(
@@ -94,7 +109,6 @@ class PublisherManager
             $this->fromReporter('middleware') ?? [],
             $publisherConfig['middleware'] ?? []
         );
-
 
         foreach ($middleware as &$_middleware) {
             if ($_middleware === DefaultChainMessageDecoratorMiddleware::class) {
@@ -209,20 +223,5 @@ class PublisherManager
     protected function fromReporter(string $key)
     {
         return Arr::get($this->reporter, $key);
-    }
-
-    public function command(string $name = null): Publisher
-    {
-        return $this->make($name ?? 'default', 'command');
-    }
-
-    public function query(string $name = null): Publisher
-    {
-        return $this->make($name ?? 'default', 'query');
-    }
-
-    public function event(string $name = null): Publisher
-    {
-        return $this->make($name ?? 'default', 'event');
     }
 }

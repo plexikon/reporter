@@ -4,13 +4,14 @@ declare(strict_types=1);
 namespace Plexikon\Reporter\Publisher\Router;
 
 use Generator;
+use Plexikon\Reporter\Exception\PublisherFailure;
 
 final class SingleHandlerRouter extends PublisherRouter
 {
     protected function generateMessageHandler(array $messageHandlers): Generator
     {
         if (1 !== count($messageHandlers)) {
-            throw new \RuntimeException("one unique handler is required");
+            throw PublisherFailure::routerSupportAndRequireOneHandlerOnly(static::class);
         }
 
         foreach ($messageHandlers as $messageHandler) {
