@@ -19,7 +19,7 @@ final class TimeOfRecordingMessageDecorator implements MessageDecorator
 
     public function decorate(Message $message): Message
     {
-        if (null !== $message->header(MessageHeader::TIME_OF_RECORDING)) {
+        if (null === $message->header(MessageHeader::TIME_OF_RECORDING)) {
             $message = $message->withHeader(
                 MessageHeader::TIME_OF_RECORDING,
                 $this->clock->pointInTime()->toString()

@@ -63,7 +63,7 @@ abstract class PublisherRouter implements PubRouter
     {
         $messageAlias = $this->messageAlias->instanceToAlias($message->event());
 
-        if (!$messageHandlers = $this->map[$messageAlias] ?? false) {
+        if (null === $messageHandlers = $this->map[$messageAlias] ?? null) {
             throw PublisherFailure::messageNameNotFoundInMap($messageAlias);
         }
 
