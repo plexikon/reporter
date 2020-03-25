@@ -6,7 +6,7 @@ namespace Plexikon\Reporter\Message\Producer;
 use Plexikon\Reporter\Contracts\Message\AsyncMessage;
 use Plexikon\Reporter\Contracts\Message\MessageHeader;
 use Plexikon\Reporter\Contracts\Message\MessageProducer;
-use Plexikon\Reporter\Contracts\Message\PayloadSerializer;
+use Plexikon\Reporter\Contracts\Message\SerializablePayload;
 use Plexikon\Reporter\Message\Message;
 use RuntimeException;
 
@@ -53,7 +53,7 @@ final class AsyncMessageProducer implements MessageProducer
             return true;
         }
 
-        if (!$message->event() instanceof PayloadSerializer) {
+        if (!$message->event() instanceof SerializablePayload) {
             return true;
         }
 
