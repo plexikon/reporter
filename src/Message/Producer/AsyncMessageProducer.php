@@ -61,6 +61,6 @@ final class AsyncMessageProducer implements MessageProducer
             return !$message->event() instanceof AsyncMessage;
         }
 
-        return $this->producerStrategy === self::ROUTE_ALL_ASYNC;
+        return false;
     }
 }
