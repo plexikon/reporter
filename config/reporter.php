@@ -20,37 +20,27 @@ return [
         ],
 
         'producer' => [
-            'async' => [
-                'abstract' => \Plexikon\Reporter\Message\Producer\AsyncMessageProducer::class,
-                'strategy' => \Plexikon\Reporter\Contracts\Message\MessageProducer::ROUTE_PER_MESSAGE,
+            'per_message' => [
                 'queue' => null,
                 'connection' => null,
             ],
             'async_all' => [
-                'abstract' => \Plexikon\Reporter\Message\Producer\AsyncMessageProducer::class,
-                'strategy' => \Plexikon\Reporter\Contracts\Message\MessageProducer::ROUTE_ALL_ASYNC,
                 'queue' => null,
                 'connection' => null,
             ],
-            'sync' => [
-                'abstract' => \Plexikon\Reporter\Message\Producer\SyncMessageProducer::class,
-            ]
+            'sync' => true
         ],
     ],
 
     'middleware' => [
         \Plexikon\Reporter\Publisher\Middleware\PublisherExceptionMiddleware::class,
-        \Plexikon\Reporter\Publisher\Middleware\DefaultChainMessageDecoratorMiddleware::class,
     ],
 
     'publisher' => [
 
         'command' => [
             'default' => [
-                'alias' => null,
-                'publisher' => \Plexikon\Reporter\CommandPublisher::class,
-                'router' => \Plexikon\Reporter\Publisher\Middleware\RoutableCommandMiddleware::class,
-                'route_strategy' => 'sync',
+                'route_strategy' => 'per_message',
                 'handler_method' => 'command',
                 'message' => [
                     'decorator' => []
@@ -64,10 +54,7 @@ return [
 
         'event' => [
             'default' => [
-                'alias' => null,
-                'publisher' => \Plexikon\Reporter\EventPublisher::class,
-                'router' => \Plexikon\Reporter\Publisher\Middleware\RoutableEventMiddleware::class,
-                'route_strategy' => 'sync',
+                'route_strategy' => 'per_message',
                 'message' => [
                     'decorator' => []
                 ],
@@ -79,10 +66,7 @@ return [
 
         'query' => [
             'default' => [
-                'alias' => null,
-                'publisher' => \Plexikon\Reporter\QueryPublisher::class,
-                'router' => \Plexikon\Reporter\Publisher\Middleware\RoutableQuerySyncMiddleware::class,
-                'route_strategy' => 'sync',
+                'route_strategy' => 'per_message',
                 'message' => [
                     'decorator' => []
                 ],
@@ -92,5 +76,4 @@ return [
             ]
         ]
     ]
-
 ];

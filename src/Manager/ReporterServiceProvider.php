@@ -37,14 +37,14 @@ class ReporterServiceProvider extends ServiceProvider
         $this->app->bindIf(PayloadSerializer::class, $message['payload_serializer']);
         $this->app->bindIf(MessageFactory::class, $message['factory']);
 
-        $this->app->singleton(PublisherManager::class);
+        $this->app->singleton(PublisherServiceManager::class);
     }
 
     public function provides(): array
     {
         return [
             MessageAlias::class, MessageSerializer::class, PayloadSerializer::class, MessageFactory::class,
-            PublisherManager::class
+            PublisherServiceManager::class
         ];
     }
 
