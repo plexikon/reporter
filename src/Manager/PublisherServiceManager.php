@@ -166,8 +166,10 @@ class PublisherServiceManager extends AbstractPublisherManager
         );
     }
 
-    protected function createMessageProducer(string $driver): MessageProducer
+    protected function createMessageProducer(?string $driver): MessageProducer
     {
+        $driver = null === $driver ? 'sync' : $driver;
+
         if ($customProducer = $this->customProducers[$driver] ?? null) {
             return $customProducer($this->container);
         }
