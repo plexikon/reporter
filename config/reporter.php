@@ -20,15 +20,17 @@ return [
         ],
 
         'producer' => [
+            'default' => 'sync',
+
             'per_message' => [
                 'queue' => null,
                 'connection' => null,
             ],
+
             'async_all' => [
                 'queue' => null,
                 'connection' => null,
-            ],
-            'sync' => true
+            ]
         ],
     ],
 

@@ -38,13 +38,21 @@ abstract class AbstractPublisherManager
             return $publisher;
         }
 
+        // todo separate publishers command query event
+
+        $customPublisher = $this->customPublishers[$driverKey] ?? null;
+
+        if($customPublisher){
+            return $customPublisher($this->container); // set in publishers
+        }
+
         $method = 'create' .Str::studly($driver . $publisherType).'PublisherDriver';
 
         if (method_exists($this, $method)) {
             return $this->publishers[$driverKey] = $this->$method();
         }
 
-        throw new RuntimeException("Unable to resolve publisher driver with driver $driver");
+        throw new RuntimeException("Unable to resolve publisher with driver $driver");
     }
 
     protected function fromReporter(string $key)

@@ -49,7 +49,7 @@ class PublisherServiceManager extends AbstractPublisherManager
 
         $publisher = new CommandPublisher(
             $this->container->get(MessageFactory::class),
-            ...$this->resolveStuff($middleware)
+            ...$this->resolveServices($middleware)
         );
 
         $publisher->setPublisherName(CommandPublisher::class);
@@ -63,7 +63,7 @@ class PublisherServiceManager extends AbstractPublisherManager
 
         $publisher = new EventPublisher(
             $this->container->get(MessageFactory::class),
-            ...$this->resolveStuff($middleware)
+            ...$this->resolveServices($middleware)
         );
 
         $publisher->setPublisherName(EventPublisher::class);
@@ -77,7 +77,7 @@ class PublisherServiceManager extends AbstractPublisherManager
 
         $publisher = new QueryPublisher(
             $this->container->get(MessageFactory::class),
-            ...$this->resolveStuff($middleware)
+            ...$this->resolveServices($middleware)
         );
 
         $publisher->setPublisherName(QueryPublisher::class);
@@ -111,7 +111,7 @@ class PublisherServiceManager extends AbstractPublisherManager
 
     protected function createDefaultRoutableCommandMiddleware(array $pubConfig): Middleware
     {
-        $producer = $this->createMessageProducer($pubConfig['route_strategy']);
+        $producer = $this->createMessageProducer($pubConfig['route_strategy'] ?? null);
 
         $router = $this->createDefaultSingleHandlerRouter(
             $pubConfig['map'],
@@ -124,7 +124,7 @@ class PublisherServiceManager extends AbstractPublisherManager
 
     protected function createDefaultRoutableEventMiddleware(array $pubConfig): Middleware
     {
-        $producer = $this->createMessageProducer($pubConfig['route_strategy']);
+        $producer = $this->createMessageProducer($pubConfig['route_strategy'] ?? null);
 
         $router = $this->createDefaultMultipleHandlersRouter(
             $pubConfig['map'],
@@ -168,7 +168,9 @@ class PublisherServiceManager extends AbstractPublisherManager
 
     protected function createMessageProducer(?string $driver): MessageProducer
     {
-        $driver = null === $driver ? 'sync' : $driver;
+        if (!$driver) {
+            $driver = 'sync';
+        }
 
         if ($customProducer = $this->customProducers[$driver] ?? null) {
             return $customProducer($this->container);
@@ -178,14 +180,18 @@ class PublisherServiceManager extends AbstractPublisherManager
             return $producer;
         }
 
+        if ('sync' === $driver) {
+            return $this->producers[$driver] = new SyncMessageProducer();
+        }
+
+        if ('per_message' !== $driver && 'async_all' !== $driver) {
+            throw new RuntimeException("Invalid message producer driver $driver");
+        }
+
         $config = $this->fromReporter("message.producer.$driver");
 
         if (!$config || empty($config)) {
             throw new RuntimeException("Invalid message producer driver $driver");
-        }
-
-        if ('sync' === $driver) {
-            return $this->producers[$driver] = new SyncMessageProducer();
         }
 
         $connection = $config['connection'] ?? null;
@@ -198,10 +204,6 @@ class PublisherServiceManager extends AbstractPublisherManager
             $queue
         );
 
-        if ('per_message' !== $driver && 'async_all' !== $driver) {
-            throw new RuntimeException("Invalid message producer driver $driver");
-        }
-
         $routeStrategy = 'per_message' === $driver
             ? MessageProducer::ROUTE_PER_MESSAGE : MessageProducer::ROUTE_ALL_ASYNC;
 
@@ -213,11 +215,11 @@ class PublisherServiceManager extends AbstractPublisherManager
         $decorators = array_merge($this->fromReporter('message.decorator') ?? [], $decorators);
 
         return new DefaultChainMessageDecoratorMiddleware(
-            new ChainMessageDecorator(...$this->resolveStuff($decorators))
+            new ChainMessageDecorator(...$this->resolveServices($decorators))
         );
     }
 
-    protected function resolveStuff(array $stuff): array
+    protected function resolveServices(array $stuff): array
     {
         foreach ($stuff as &$item) {
             if (is_string($item)) {
