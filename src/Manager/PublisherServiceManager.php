@@ -28,19 +28,19 @@ use Plexikon\Reporter\Support\Message\ChainMessageDecorator;
 
 class PublisherServiceManager extends AbstractPublisherManager
 {
-    public function createCommandPublisher(string $publisherName = 'default'): Publisher
+    public function createCommandPublisher(?string $publisherName = null): Publisher
     {
-        return $this->createPublisher($publisherName, self::COMMAND_TYPE);
+        return $this->createPublisher($publisherName ?? 'default', self::COMMAND_TYPE);
     }
 
-    public function createQueryPublisher(string $publisherName = 'default'): Publisher
+    public function createQueryPublisher(?string $publisherName = null): Publisher
     {
-        return $this->createPublisher($publisherName, self::QUERY_TYPE);
+        return $this->createPublisher($publisherName ?? 'default', self::QUERY_TYPE);
     }
 
-    public function createEventPublisher(string $publisherName = 'default'): Publisher
+    public function createEventPublisher(?string $publisherName = null): Publisher
     {
-        return $this->createPublisher($publisherName, self::EVENT_TYPE);
+        return $this->createPublisher($publisherName ?? 'default', self::EVENT_TYPE);
     }
 
     protected function createDefaultCommandPublisherDriver(): Publisher
@@ -85,17 +85,20 @@ class PublisherServiceManager extends AbstractPublisherManager
         return $publisher;
     }
 
-
     private function createDefaultPublisherMiddleware(string $publisherType): array
     {
         $pubConfig = $this->fromReporter("publisher.$publisherType.default");
 
+        $middleware = [];
+
+        // need a flag in config for this one
+        $middleware[] = $this->createDefaultMessageDecoratorMiddleware($pubConfig['message']['decorator'] ?? []);
+
         $middleware = array_merge(
+            $middleware,
             $this->fromReporter('middleware') ?? [],
             $pubConfig['middleware'] ?? []
         );
-
-        $middleware[] = $this->createDefaultMessageDecoratorMiddleware($pubConfig['message']['decorator'] ?? []);
 
         $routableMethod = 'createDefaultRoutable' . Str::studly($publisherType) . 'Middleware';
 
@@ -119,7 +122,7 @@ class PublisherServiceManager extends AbstractPublisherManager
         return new RoutableCommandMiddleware($router, $producer);
     }
 
-    protected function createDefaultEventRoutableMiddleware(array $pubConfig): Middleware
+    protected function createDefaultRoutableEventMiddleware(array $pubConfig): Middleware
     {
         $producer = $this->createMessageProducer($pubConfig['route_strategy']);
 
@@ -205,7 +208,7 @@ class PublisherServiceManager extends AbstractPublisherManager
 
     protected function createDefaultMessageDecoratorMiddleware(array $decorators): Middleware
     {
-        $decorators = array_merge($this->fromReporter('message.decorators') ?? [], $decorators);
+        $decorators = array_merge($this->fromReporter('message.decorator') ?? [], $decorators);
 
         return new DefaultChainMessageDecoratorMiddleware(
             new ChainMessageDecorator(...$this->resolveStuff($decorators))
