@@ -168,8 +168,8 @@ class PublisherServiceManager extends AbstractPublisherManager
 
     protected function createMessageProducer(?string $driver): MessageProducer
     {
-        if (!$driver) {
-            $driver = 'sync';
+        if(!$driver){
+            $driver = $this->fromReporter("message.producer.default");
         }
 
         if ($customProducer = $this->customProducers[$driver] ?? null) {
