@@ -28,14 +28,18 @@ final class CommandValidationMiddleware implements Middleware
 
         $event = $message->event();
 
-        $alreadyProducedAsync = $message->header(MessageHeader::MESSAGE_ASYNC_MARKED);
+        if ($event instanceof ValidateMessage) {
+            $alreadyProducedAsync = $message->header(MessageHeader::MESSAGE_ASYNC_MARKED);
 
-        if (!$alreadyProducedAsync && $event instanceof PreValidateMessage) {
-            $this->validateMessage($message);
-        }
+            assert(null !== $alreadyProducedAsync, 'Validate message need an sync marker header');
 
-        if ($alreadyProducedAsync && $event instanceof ValidateMessage) {
-            $this->validateMessage($message);
+            if (!$alreadyProducedAsync && $event instanceof PreValidateMessage) {
+                $this->validateMessage($message);
+            }
+
+            if ($alreadyProducedAsync) {
+                $this->validateMessage($message);
+            }
         }
 
         return $next($message);
