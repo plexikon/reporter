@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Reporter\Publisher\Concerns;
 
-trait HasNamedPub
+trait HasNamedPublisher
 {
     private ?string $pubName;
 

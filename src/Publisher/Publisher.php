@@ -6,13 +6,13 @@ namespace Plexikon\Reporter\Publisher;
 use Plexikon\Reporter\Contracts\Message\MessageFactory;
 use Plexikon\Reporter\Contracts\Message\MessageHeader;
 use Plexikon\Reporter\Contracts\Publisher\Middleware;
-use Plexikon\Reporter\Contracts\Publisher\NamedPub;
+use Plexikon\Reporter\Contracts\Publisher\NamedPublisher;
 use Plexikon\Reporter\Message\Message;
-use Plexikon\Reporter\Publisher\Concerns\HasNamedPub;
+use Plexikon\Reporter\Publisher\Concerns\HasNamedPublisher;
 
-abstract class Publisher implements NamedPub
+abstract class Publisher implements NamedPublisher
 {
-    use HasNamedPub;
+    use HasNamedPublisher;
 
     /**
      * @var callable
@@ -40,8 +40,7 @@ abstract class Publisher implements NamedPub
 
     private function nextMiddleware(array $middlewareList): callable
     {
-        $last = function (): void {
-        };
+        $last = function (): void {};
 
         while ($middleware = array_pop($middlewareList)) {
             $last = function (Message $message) use ($middleware, $last) {

@@ -2,7 +2,7 @@
 
 namespace Plexikon\Reporter\Contracts\Publisher;
 
-interface NamedPub extends Publisher
+interface NamedPublisher extends Publisher
 {
     public function setPublisherName(string $pubName): void;
 
