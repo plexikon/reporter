@@ -20,7 +20,7 @@ return [
         ],
 
         'producer' => [
-            'default' => 'sync',
+            'default' => 'sync', // default is overridden per publisher producer if exists
 
             'per_message' => [
                 'queue' => null,
