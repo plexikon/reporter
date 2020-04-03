@@ -8,6 +8,7 @@ use Plexikon\Reporter\Contracts\Message\MessageHeader;
 use Plexikon\Reporter\Contracts\Message\PreValidateMessage;
 use Plexikon\Reporter\Contracts\Message\ValidateMessage;
 use Plexikon\Reporter\Contracts\Publisher\Middleware;
+use Plexikon\Reporter\Exception\Assertion;
 use Plexikon\Reporter\Exception\ValidationMessageFailed;
 use Plexikon\Reporter\Message\Message;
 
@@ -31,7 +32,7 @@ final class CommandValidationMiddleware implements Middleware
         if ($event instanceof ValidateMessage) {
             $alreadyProducedAsync = $message->header(MessageHeader::MESSAGE_ASYNC_MARKED);
 
-            assert(null !== $alreadyProducedAsync, 'Validate message need an sync marker header');
+            Assertion::notNull($alreadyProducedAsync, 'Validate message require an sync marker header');
 
             if (!$alreadyProducedAsync && $event instanceof PreValidateMessage) {
                 $this->validateMessage($message);

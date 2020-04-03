@@ -43,7 +43,7 @@ abstract class AbstractPublisherManager
         $customPublisher = $this->customPublishers[$driverKey] ?? null;
 
         if($customPublisher){
-            return $customPublisher($this->container); // set in publishers
+            return $customPublisher($this->container);
         }
 
         $method = 'create' .Str::studly($driver . $publisherType).'PublisherDriver';

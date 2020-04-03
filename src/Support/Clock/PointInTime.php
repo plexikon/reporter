@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Plexikon\Reporter\Support\Clock;
 
 use DateTimeImmutable;
+use Plexikon\Reporter\Exception\Assertion;
 
 final class PointInTime
 {
@@ -38,7 +39,7 @@ final class PointInTime
     {
         $dateTime = DateTimeImmutable::createFromFormat(self::DATE_TIME_FORMAT, $pointInTime);
 
-        assert($dateTime instanceof DateTimeImmutable,'Invalid date time');
+        Assertion::isInstanceOf($dateTime, DateTimeImmutable::class, 'Invalid date time');
 
         return new PointInTime($dateTime);
     }
