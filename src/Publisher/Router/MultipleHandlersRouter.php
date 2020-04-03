@@ -10,7 +10,7 @@ final class MultipleHandlersRouter extends PublisherRouter
     protected function generateMessageHandler(array $messageHandlers): Generator
     {
         foreach ($messageHandlers as $messageHandler) {
-            yield from $this->messageHandlerToCallable($messageHandler);
+            yield $this->messageHandlerToCallable($messageHandler);
         }
     }
 }
