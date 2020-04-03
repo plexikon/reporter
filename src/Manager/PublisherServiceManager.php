@@ -219,14 +219,14 @@ class PublisherServiceManager extends AbstractPublisherManager
         );
     }
 
-    protected function resolveServices(array $stuff): array
+    protected function resolveServices(array $services): array
     {
-        foreach ($stuff as &$item) {
-            if (is_string($item)) {
-                $item = $this->container->make($item);
+        foreach ($services as &$service) {
+            if (is_string($service)) {
+                $service = $this->container->make($service);
             }
         }
 
-        return $stuff;
+        return $services;
     }
 }
