@@ -20,10 +20,6 @@ abstract class DomainMessage implements Messaging
         return $this->payload;
     }
 
-    /**
-     * @param array $payload
-     * @return SerializablePayload|Messaging
-     */
     public static function fromPayload(array $payload): SerializablePayload
     {
         return new static($payload);
