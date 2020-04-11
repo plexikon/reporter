@@ -7,7 +7,7 @@ use Plexikon\Reporter\Contracts\Message\MessageDecorator;
 use Plexikon\Reporter\Contracts\Publisher\Middleware;
 use Plexikon\Reporter\Message\Message;
 
-final class DefaultChainMessageDecoratorMiddleware implements Middleware
+final class ChainMessageDecoratorMiddleware implements Middleware
 {
     private MessageDecorator $messageDecorator;
 

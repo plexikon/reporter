@@ -2,7 +2,10 @@
 
 return [
 
+    'clock'=> \Plexikon\Reporter\Support\Clock\ReporterClock::class,
+
     'message' => [
+
         'factory' => \Plexikon\Reporter\Message\Factory\PublisherMessageFactory::class,
 
         'serializer' => \Plexikon\Reporter\Message\Serializer\DefaultMessageSerializer::class,
@@ -36,6 +39,7 @@ return [
 
     'middleware' => [
         \Plexikon\Reporter\Publisher\Middleware\PublisherExceptionMiddleware::class,
+        \Plexikon\Reporter\Publisher\Middleware\CommandValidationMiddleware::class,
     ],
 
     'publisher' => [

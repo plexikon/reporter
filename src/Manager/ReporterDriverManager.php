@@ -10,14 +10,16 @@ use Plexikon\Reporter\Contracts\Message\MessageAlias;
 use Plexikon\Reporter\Contracts\Message\MessageFactory;
 use Plexikon\Reporter\Contracts\Message\MessageProducer;
 use Plexikon\Reporter\Contracts\Message\MessageSerializer;
+use Plexikon\Reporter\Contracts\Message\Messaging;
 use Plexikon\Reporter\Contracts\Publisher\Middleware;
+use Plexikon\Reporter\Contracts\Publisher\NamedPublisher;
 use Plexikon\Reporter\Contracts\Publisher\Publisher;
 use Plexikon\Reporter\EventPublisher;
 use Plexikon\Reporter\Exception\RuntimeException;
 use Plexikon\Reporter\Message\Producer\AsyncMessageProducer;
 use Plexikon\Reporter\Message\Producer\IlluminateProducer;
 use Plexikon\Reporter\Message\Producer\SyncMessageProducer;
-use Plexikon\Reporter\Publisher\Middleware\DefaultChainMessageDecoratorMiddleware;
+use Plexikon\Reporter\Publisher\Middleware\ChainMessageDecoratorMiddleware;
 use Plexikon\Reporter\Publisher\Middleware\RoutableCommandMiddleware;
 use Plexikon\Reporter\Publisher\Middleware\RoutableEventMiddleware;
 use Plexikon\Reporter\Publisher\Middleware\RoutableQuerySyncMiddleware;
@@ -26,81 +28,49 @@ use Plexikon\Reporter\Publisher\Router\SingleHandlerRouter;
 use Plexikon\Reporter\QueryPublisher;
 use Plexikon\Reporter\Support\Message\ChainMessageDecorator;
 
-class PublisherServiceManager extends AbstractPublisherManager
+class ReporterDriverManager extends ReporterManager
 {
-    public function createCommandPublisher(?string $publisherName = null): Publisher
+    protected function createPublisherTypeDriver(string $className, string $type): Publisher
     {
-        return $this->createPublisher($publisherName ?? 'default', self::COMMAND_TYPE);
-    }
+        $middleware = $this->resolvePublisherMiddleware($type);
 
-    public function createQueryPublisher(?string $publisherName = null): Publisher
-    {
-        return $this->createPublisher($publisherName ?? 'default', self::QUERY_TYPE);
-    }
+        $publisher = new $className(
+            $this->container->get(MessageFactory::class),
+            ...$this->resolveServices($middleware)
+        );
 
-    public function createEventPublisher(?string $publisherName = null): Publisher
-    {
-        return $this->createPublisher($publisherName ?? 'default', self::EVENT_TYPE);
+        if ($publisher instanceof NamedPublisher) {
+            $publisher->setPublisherName(CommandPublisher::class);
+        }
+
+        return $publisher;
     }
 
     protected function createDefaultCommandPublisherDriver(): Publisher
     {
-        $middleware = $this->createDefaultPublisherMiddleware(self::COMMAND_TYPE);
-
-        $publisher = new CommandPublisher(
-            $this->container->get(MessageFactory::class),
-            ...$this->resolveServices($middleware)
-        );
-
-        $publisher->setPublisherName(CommandPublisher::class);
-
-        return $publisher;
+        return $this->createPublisherTypeDriver(CommandPublisher::class, Messaging::COMMAND);
     }
 
     protected function createDefaultEventPublisherDriver(): Publisher
     {
-        $middleware = $this->createDefaultPublisherMiddleware(self::EVENT_TYPE);
-
-        $publisher = new EventPublisher(
-            $this->container->get(MessageFactory::class),
-            ...$this->resolveServices($middleware)
-        );
-
-        $publisher->setPublisherName(EventPublisher::class);
-
-        return $publisher;
+        return $this->createPublisherTypeDriver(EventPublisher::class, Messaging::EVENT);
     }
 
     protected function createDefaultQueryPublisherDriver(): Publisher
     {
-        $middleware = $this->createDefaultPublisherMiddleware(self::QUERY_TYPE);
-
-        $publisher = new QueryPublisher(
-            $this->container->get(MessageFactory::class),
-            ...$this->resolveServices($middleware)
-        );
-
-        $publisher->setPublisherName(QueryPublisher::class);
-
-        return $publisher;
+        return $this->createPublisherTypeDriver(QueryPublisher::class, Messaging::QUERY);
     }
 
-    private function createDefaultPublisherMiddleware(string $publisherType): array
+    protected function resolvePublisherMiddleware(string $type): array
     {
-        $pubConfig = $this->fromReporter("publisher.$publisherType.default");
+        $pubConfig = $this->fromReporter("publisher.$type.default");
 
         $middleware = [];
+        $middleware[] = $this->resolveMessageDecoratorMiddleware($pubConfig['message']['decorator'] ?? []);
 
-        // need a flag in config for this one
-        $middleware[] = $this->createDefaultMessageDecoratorMiddleware($pubConfig['message']['decorator'] ?? []);
+        $middleware = array_merge($middleware, $this->fromReporter('middleware', []), $pubConfig['middleware'] ?? []);
 
-        $middleware = array_merge(
-            $middleware,
-            $this->fromReporter('middleware') ?? [],
-            $pubConfig['middleware'] ?? []
-        );
-
-        $routableMethod = 'createDefaultRoutable' . Str::studly($publisherType) . 'Middleware';
+        $routableMethod = 'createDefaultRoutable' . Str::studly($type) . 'Middleware';
 
         if (method_exists($this, $routableMethod)) {
             return array_merge($middleware, [$this->$routableMethod($pubConfig)]);
@@ -168,7 +138,7 @@ class PublisherServiceManager extends AbstractPublisherManager
 
     protected function createMessageProducer(?string $driver): MessageProducer
     {
-        if(!$driver){
+        if (null === $driver) {
             $driver = $this->fromReporter("message.producer.default");
         }
 
@@ -194,14 +164,11 @@ class PublisherServiceManager extends AbstractPublisherManager
             throw new RuntimeException("Invalid message producer driver $driver");
         }
 
-        $connection = $config['connection'] ?? null;
-        $queue = $config['queue'] ?? null;
-
         $illuminateProducer = new IlluminateProducer(
             $this->container->get(QueueingDispatcher::class),
-            $this->container->make(MessageSerializer::class),
-            $connection,
-            $queue
+            $this->container->get(MessageSerializer::class),
+            $config['connection'] ?? null,
+            $config['queue'] ?? null
         );
 
         $routeStrategy = 'per_message' === $driver
@@ -210,11 +177,11 @@ class PublisherServiceManager extends AbstractPublisherManager
         return $this->producers[$driver] = new AsyncMessageProducer($illuminateProducer, $routeStrategy);
     }
 
-    protected function createDefaultMessageDecoratorMiddleware(array $decorators): Middleware
+    protected function resolveMessageDecoratorMiddleware(array $decorators): Middleware
     {
-        $decorators = array_merge($this->fromReporter('message.decorator') ?? [], $decorators);
+        $decorators = array_merge($this->fromReporter('message.decorator', []), $decorators);
 
-        return new DefaultChainMessageDecoratorMiddleware(
+        return new ChainMessageDecoratorMiddleware(
             new ChainMessageDecorator(...$this->resolveServices($decorators))
         );
     }

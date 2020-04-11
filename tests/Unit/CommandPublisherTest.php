@@ -15,7 +15,7 @@ use Plexikon\Reporter\Message\Factory\PublisherMessageFactory;
 use Plexikon\Reporter\Message\Producer\SyncMessageProducer;
 use Plexikon\Reporter\Message\Serializer\DefaultMessageSerializer;
 use Plexikon\Reporter\Message\Serializer\DefaultPayloadSerializer;
-use Plexikon\Reporter\Publisher\Middleware\DefaultChainMessageDecoratorMiddleware;
+use Plexikon\Reporter\Publisher\Middleware\ChainMessageDecoratorMiddleware;
 use Plexikon\Reporter\Publisher\Middleware\RoutableCommandMiddleware;
 use Plexikon\Reporter\Publisher\Router\SingleHandlerRouter;
 use Plexikon\Reporter\Support\Clock\ReporterClock;
@@ -49,7 +49,7 @@ class CommandPublisherTest extends TestCase
             $router, new SyncMessageProducer()
         );
 
-        $messageDecoratorMiddleware = new DefaultChainMessageDecoratorMiddleware(
+        $messageDecoratorMiddleware = new ChainMessageDecoratorMiddleware(
             new ChainMessageDecorator(
                 new EventIdMessageDecorator(),
                 new EventTypeMessageDecorator($messageAlias),
@@ -89,7 +89,7 @@ class CommandPublisherTest extends TestCase
             $router, new SyncMessageProducer()
         );
 
-        $messageDecoratorMiddleware = new DefaultChainMessageDecoratorMiddleware(
+        $messageDecoratorMiddleware = new ChainMessageDecoratorMiddleware(
             new ChainMessageDecorator(
                 new EventIdMessageDecorator(),
                 new EventTypeMessageDecorator($messageAlias),
