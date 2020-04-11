@@ -3,36 +3,36 @@ declare(strict_types=1);
 
 namespace Plexikon\Reporter\Support\Publisher;
 
-use Plexikon\Reporter\Manager\PublisherServiceManager;
+use Plexikon\Reporter\Manager\ReporterDriverManager;
 use Plexikon\Reporter\Support\HasPromiseHandler;
 
 class LazyPublisher
 {
     use HasPromiseHandler;
 
-    private PublisherServiceManager $publisherManager;
+    private ReporterDriverManager $publisherManager;
     private ?string $publisherName = null;
 
-    public function __construct(PublisherServiceManager $publisherManager)
+    public function __construct(ReporterDriverManager $publisherManager)
     {
         $this->publisherManager = $publisherManager;
     }
 
-    public function command(object $command): void
+    public function publishCommand(object $command): void
     {
-        $this->publisherManager->createCommandPublisher($this->publisherName)->dispatch($command);
+        $this->publisherManager->commandPublisher($this->publisherName)->dispatch($command);
         $this->publisherName = null;
     }
 
-    public function event(object $event): void
+    public function publishEvent(object $event): void
     {
-        $this->publisherManager->createEventPublisher($this->publisherName)->dispatch($event);
+        $this->publisherManager->eventPublisher($this->publisherName)->dispatch($event);
         $this->publisherName = null;
     }
 
-    public function query(object $query)
+    public function publishQuery(object $query)
     {
-        $promise = $this->publisherManager->createQueryPublisher($this->publisherName)->dispatch($query);
+        $promise = $this->publisherManager->queryPublisher($this->publisherName)->dispatch($query);
         $this->publisherName = null;
 
         return $this->handlePromise($promise);
