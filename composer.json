@@ -20,7 +20,8 @@
         "laravel/framework": "^7.2",
         "phpstan/phpstan": "^0.12",
         "phpunit/phpunit": "^8.5",
-        "roave/security-advisories": "dev-master"
+        "roave/security-advisories": "dev-master",
+        "orchestra/testbench": "^5.1"
     },
     "autoload": {
         "psr-4": {
@@ -29,7 +30,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Plexikon\\Reporter\\Test\\": "tests"
+            "Plexikon\\Reporter\\Tests\\": "tests"
         }
     },
     "scripts": {

@@ -43,13 +43,13 @@ class HttpMessageMiddleware
 
         switch ($messageType) {
             case Messaging::COMMAND:
-                $this->publisher->command($message);
+                $this->publisher->publishCommand($message);
                 return [];
             case Messaging::EVENT:
-                $this->publisher->event($message);
+                $this->publisher->publishEvent($message);
                 return [];
             case Messaging::QUERY:
-                return $this->publisher->query($message);
+                return $this->publisher->publishQuery($message);
             default:
                 throw new RuntimeException(
                     "Unable to detect message type from " . get_class($event),

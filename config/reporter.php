@@ -2,7 +2,7 @@
 
 return [
 
-    'clock'=> \Plexikon\Reporter\Support\Clock\ReporterClock::class,
+    'clock' => \Plexikon\Reporter\Support\Clock\ReporterClock::class,
 
     'message' => [
 
@@ -18,7 +18,6 @@ return [
             \Plexikon\Reporter\Message\Decorator\EventIdMessageDecorator::class,
             \Plexikon\Reporter\Message\Decorator\EventTypeMessageDecorator::class,
             \Plexikon\Reporter\Message\Decorator\TimeOfRecordingMessageDecorator::class,
-            \Plexikon\Reporter\Message\Decorator\MessageTypeMessageDecorator::class,
             \Plexikon\Reporter\Message\Decorator\AsyncMarkerMessageDecorator::class,
         ],
 

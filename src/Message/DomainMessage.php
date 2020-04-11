@@ -8,7 +8,7 @@ use Plexikon\Reporter\Contracts\Message\SerializablePayload;
 
 abstract class DomainMessage implements Messaging
 {
-    private array $payload;
+    protected array $payload;
 
     protected function __construct(array $payload)
     {

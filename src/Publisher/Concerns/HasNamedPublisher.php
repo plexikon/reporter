@@ -5,15 +5,15 @@ namespace Plexikon\Reporter\Publisher\Concerns;
 
 trait HasNamedPublisher
 {
-    private ?string $pubName;
+    private ?string $publisherName;
 
-    public function setPublisherName(string $pubName): void
+    public function setPublisherName(string $publisherName): void
     {
-        $this->pubName = $pubName;
+        $this->publisherName = $publisherName;
     }
 
     public function publisherName(): string
     {
-        return $this->pubName;
+        return $this->publisherName;
     }
 }

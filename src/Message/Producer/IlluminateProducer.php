@@ -12,6 +12,7 @@ use Plexikon\Reporter\EventPublisher;
 use Plexikon\Reporter\Message\Message;
 use Plexikon\Reporter\QueryPublisher;
 use RuntimeException;
+use function get_class;
 
 class IlluminateProducer
 {
@@ -53,18 +54,21 @@ class IlluminateProducer
             return $namedBus;
         }
 
-        $messageType = $message->header(MessageHeader::MESSAGE_TYPE);
+        $event = $message->event();
 
-        switch ($messageType) {
-            case Messaging::COMMAND:
-                return CommandPublisher::class;
-            case Messaging::EVENT:
-                return EventPublisher::class;
-            case Messaging::QUERY:
-                return QueryPublisher::class;
+        if($event instanceof Messaging){
+            $messageType = $event->messageType();
 
-            default:
-                throw new RuntimeException("Can not detect bus type from message type $messageType");
+            switch ($messageType) {
+                case Messaging::COMMAND:
+                    return CommandPublisher::class;
+                case Messaging::EVENT:
+                    return EventPublisher::class;
+                case Messaging::QUERY:
+                    return QueryPublisher::class;
+            }
         }
+
+        throw new RuntimeException("Can not detect bus type from message event " . (get_class($event)));
     }
 }

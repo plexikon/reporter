@@ -7,5 +7,9 @@ use Plexikon\Reporter\Message\Message;
 
 interface PubRouter
 {
+    /**
+     * @param Message $message
+     * @return Generator
+     */
     public function route(Message $message): Generator;
 }
