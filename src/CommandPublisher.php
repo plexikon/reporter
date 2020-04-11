@@ -5,6 +5,7 @@ namespace Plexikon\Reporter;
 
 use Plexikon\Reporter\Publisher\Publisher;
 use Throwable;
+use function array_shift;
 
 class CommandPublisher extends Publisher
 {
