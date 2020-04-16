@@ -37,7 +37,7 @@ class ReporterManager
         }
 
         if ($customPublisher = $this->customPublishers[$key] ?? null) {
-            return $customPublisher;
+            return $this->publishers[$key] = $customPublisher;
         }
 
         $method = 'create' . Str::studly($name . $type) . 'PublisherDriver';
