@@ -45,15 +45,15 @@ final class AsyncMessageProducer implements MessageProducer
 
     public function mustBeHandledSync(Message $message): bool
     {
+        if (!$message->event() instanceof SerializablePayload) {
+            return true;
+        }
+
         if ($this->isMarkedAsync($message)) {
             return true;
         }
 
         if ($this->producerStrategy === self::ROUTE_NONE_ASYNC) {
-            return true;
-        }
-
-        if (!$message->event() instanceof SerializablePayload) {
             return true;
         }
 

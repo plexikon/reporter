@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Plexikon\Reporter\Message;
 
 use Plexikon\Reporter\Contracts\Message\Messaging;
+use Plexikon\Reporter\Exception\RuntimeException;
 
 final class Message
 {
@@ -19,6 +20,15 @@ final class Message
     public function event(): object
     {
         return $this->event;
+    }
+
+    public function eventWithHeaders(): Messaging
+    {
+        if (!$this->event instanceof Messaging) {
+            throw new RuntimeException('Report headers to invalid event');
+        }
+
+        return $this->event->withHeaders($this->headers);
     }
 
     public function withHeader(string $key, $value): Message

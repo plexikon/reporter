@@ -8,6 +8,7 @@ use Plexikon\Reporter\Contracts\Message\SerializablePayload;
 
 abstract class DomainMessage implements Messaging
 {
+    protected array $headers = [];
     protected array $payload;
 
     protected function __construct(array $payload)
@@ -23,5 +24,27 @@ abstract class DomainMessage implements Messaging
     public static function fromPayload(array $payload): SerializablePayload
     {
         return new static($payload);
+    }
+
+    public function withHeaders(array $headers): Messaging
+    {
+        $self = clone $this;
+        $self->headers = $headers;
+
+        return $self;
+    }
+
+    public function headers(): array
+    {
+        return $this->headers;
+    }
+
+    public function header(string $header)
+    {
+        if (isset($this->headers[$header])) {
+            return $this->headers[$header];
+        }
+
+        return null;
     }
 }

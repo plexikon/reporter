@@ -24,7 +24,9 @@ final class RoutableEventMiddleware implements Middleware
         if ($this->messageProducer->mustBeHandledSync($message)) {
             foreach ($this->router->route($message) as $messageHandler) {
                 if ($messageHandler) {
-                    $messageHandler($message->event());
+                    $messageHandler(
+                       $message->isMessaging() ? $message->eventWithHeaders() : $message->event()
+                    );
                 }
             }
 

@@ -25,7 +25,10 @@ final class RoutableQuerySyncMiddleware implements Middleware
         $deferred = new Deferred();
 
         try {
-            $messageHandler($message->event(), $deferred);
+            $messageHandler(
+                $message->isMessaging() ? $message->eventWithHeaders() : $message->event(),
+                $deferred
+            );
         } catch (Throwable $exception) {
             $deferred->reject($exception);
         } finally {

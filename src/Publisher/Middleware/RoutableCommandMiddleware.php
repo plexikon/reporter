@@ -24,7 +24,9 @@ final class RoutableCommandMiddleware implements Middleware
         if ($this->messageProducer->mustBeHandledSync($message)) {
             $messageHandler = $this->router->route($message)->current();
 
-            $messageHandler($message->event());
+            $messageHandler(
+                $message->isMessaging() ? $message->eventWithHeaders() : $message->event()
+            );
 
             return $next($message);
         }
