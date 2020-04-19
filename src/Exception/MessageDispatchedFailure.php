@@ -12,8 +12,7 @@ class MessageDispatchedFailure extends RuntimeException
 
     public static function withException(Throwable $exception): self
     {
-        $message = "An error occurred while dispatching message. ";
-        $message .= "See previous exceptions";
+        $message = "An error occurred while dispatching message. See previous exceptions";
 
         return new self($message, 422, $exception);
     }
