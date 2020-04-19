@@ -36,7 +36,8 @@ final class DefaultMessageSerializer implements MessageSerializer
 
     public function unserializePayload(array $payload): Generator
     {
-        assert(isset($payload['headers'], $payload['payload']));
+        Assertion::keyIsset($payload, 'headers', 'Headers key missing');
+        Assertion::keyIsset($payload, 'payload', 'Payload key missing');
 
         $headers = $payload['headers'];
         $fromPayload = $payload['payload'];
