@@ -58,7 +58,6 @@ class DefaultMessageSerializerTest extends TestCase
         $payloadSerializer->unserializePayload('class_name', ['baz' =>'baz'])->willReturn($event);
 
         $serializer = new DefaultMessageSerializer($alias->reveal(), $payloadSerializer->reveal());
-
         $message = $serializer->unserializePayload($payload)->current();
 
         $this->assertInstanceOf(Message::class, $message);
