@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Plexikon\Reporter\Manager;
 
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use Plexikon\Reporter\Contracts\Clock\Clock;
 use Plexikon\Reporter\Contracts\Message\MessageAlias;
@@ -10,7 +11,7 @@ use Plexikon\Reporter\Contracts\Message\MessageFactory;
 use Plexikon\Reporter\Contracts\Message\MessageSerializer;
 use Plexikon\Reporter\Contracts\Message\PayloadSerializer;
 
-class ReporterServiceProvider extends ServiceProvider
+class ReporterServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     public function boot(): void
     {
