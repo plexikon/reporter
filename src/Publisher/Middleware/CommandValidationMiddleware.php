@@ -34,11 +34,7 @@ final class CommandValidationMiddleware implements Middleware
 
             Assertion::notNull($alreadyProducedAsync, 'Validate message require an async marker header');
 
-            if (!$alreadyProducedAsync && $event instanceof PreValidateMessage) {
-                $this->validateMessage($message);
-            }
-
-            if ($alreadyProducedAsync) {
+            if ($alreadyProducedAsync || $event instanceof PreValidateMessage) {
                 $this->validateMessage($message);
             }
         }

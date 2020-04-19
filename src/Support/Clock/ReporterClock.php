@@ -13,7 +13,7 @@ final class ReporterClock implements Clock
 
     public function __construct(DateTimeZone $timeZone = null)
     {
-        $this->timeZone = $timeZone ?: new DateTimeZone('UTC');
+        $this->timeZone = $timeZone ?? new DateTimeZone('UTC');
     }
 
     public function dateTime(): DateTimeImmutable
