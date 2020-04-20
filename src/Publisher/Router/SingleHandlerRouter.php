@@ -6,7 +6,7 @@ namespace Plexikon\Reporter\Publisher\Router;
 use Generator;
 use Plexikon\Reporter\Exception\PublisherFailure;
 
-final class SingleHandlerRouter extends PublisherRouter
+class SingleHandlerRouter extends PublisherRouter
 {
     protected function generateMessageHandler(array $messageHandlers): Generator
     {

@@ -5,7 +5,7 @@ namespace Plexikon\Reporter\Publisher\Router;
 
 use Generator;
 
-final class MultipleHandlersRouter extends PublisherRouter
+class MultipleHandlersRouter extends PublisherRouter
 {
     protected function generateMessageHandler(array $messageHandlers): Generator
     {
