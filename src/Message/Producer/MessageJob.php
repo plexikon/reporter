@@ -10,10 +10,10 @@ use Plexikon\Reporter\Contracts\Publisher\Publisher;
 
 final class MessageJob
 {
-    private array $payload;
-    private string $busType;
     public ?string $connection;
     private ?string $queue;
+    private array $payload;
+    private string $busType;
 
     public function __construct(array $payload, string $busType, ?string $connection, ?string $queue)
     {
