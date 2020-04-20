@@ -9,9 +9,9 @@ use Plexikon\Reporter\Contracts\Message\MessageHeader;
 use Plexikon\Reporter\Contracts\Message\MessageSerializer;
 use Plexikon\Reporter\Contracts\Message\Messaging;
 use Plexikon\Reporter\EventPublisher;
+use Plexikon\Reporter\Exception\RuntimeException;
 use Plexikon\Reporter\Message\Message;
 use Plexikon\Reporter\QueryPublisher;
-use RuntimeException;
 use function get_class;
 
 class IlluminateProducer

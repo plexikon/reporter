@@ -16,12 +16,6 @@ interface MessageProducer
      * @param Message $message
      * @return bool
      */
-    public function isMarkedAsync(Message $message): bool;
-
-    /**
-     * @param Message $message
-     * @return bool
-     */
     public function mustBeHandledSync(Message $message): bool;
 
     /**

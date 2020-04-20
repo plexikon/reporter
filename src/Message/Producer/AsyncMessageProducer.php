@@ -7,8 +7,8 @@ use Plexikon\Reporter\Contracts\Message\AsyncMessage;
 use Plexikon\Reporter\Contracts\Message\MessageHeader;
 use Plexikon\Reporter\Contracts\Message\MessageProducer;
 use Plexikon\Reporter\Contracts\Message\SerializablePayload;
+use Plexikon\Reporter\Exception\RuntimeException;
 use Plexikon\Reporter\Message\Message;
-use RuntimeException;
 
 final class AsyncMessageProducer implements MessageProducer
 {
@@ -23,24 +23,11 @@ final class AsyncMessageProducer implements MessageProducer
 
     public function produce(Message $message): Message
     {
-        if ($this->isMarkedAsync($message)) {
-            throw new RuntimeException("already produced async");
-        }
-
         if ($this->mustBeHandledSync($message)) {
             return $message;
         }
 
-        $message = $message->withHeader(MessageHeader::MESSAGE_ASYNC_MARKED, true);
-
-        $this->illuminateProducer->handle($message);
-
-        return $message;
-    }
-
-    public function isMarkedAsync(Message $message): bool
-    {
-        return true === $message->header(MessageHeader::MESSAGE_ASYNC_MARKED);
+        return $this->produceMessageAsync($message);
     }
 
     public function mustBeHandledSync(Message $message): bool
@@ -61,6 +48,24 @@ final class AsyncMessageProducer implements MessageProducer
             return !$message->event() instanceof AsyncMessage;
         }
 
-        return false;
+        if ($this->producerStrategy === self::ROUTE_ALL_ASYNC) {
+            return false;
+        }
+
+        throw new RuntimeException("Unable to determine producer with strategy " . $this->producerStrategy);
+    }
+
+    private function produceMessageAsync(Message $message): Message
+    {
+        $message = $message->withHeader(MessageHeader::MESSAGE_ASYNC_MARKED, true);
+
+        $this->illuminateProducer->handle($message);
+
+        return $message;
+    }
+
+    private function isMarkedAsync(Message $message): bool
+    {
+        return true === $message->header(MessageHeader::MESSAGE_ASYNC_MARKED);
     }
 }
