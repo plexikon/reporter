@@ -7,16 +7,14 @@ class PublisherFailure extends RuntimeException
 {
     public static function unsupportedMessageHandler($messageHandler): self
     {
-        $message = 'Unable to resolve message handler';
-        $message .= "got type: " . (gettype($messageHandler));
+        $message = 'Unable to resolve message handler, got type: ' . (gettype($messageHandler));
 
         return new self($message);
     }
 
     public static function missingContainerForMessageHandler(string $messageHandler): self
     {
-        $message = 'Unable to resolve string message handler ' . $messageHandler;
-        $message .= "without container";
+        $message = "Unable to resolve string message handler $messageHandler without container";
 
         return new self($message);
     }
