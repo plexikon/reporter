@@ -2,18 +2,44 @@
 
 return [
 
+    /**
+     * Reporter clock
+     * ---------------------------------------------
+     *
+     * in use in TimeOfRecordingMessageDecorator
+     */
     'clock' => \Plexikon\Reporter\Support\Clock\ReporterClock::class,
 
+    /**
+     * Message
+     * ---------------------------------------------
+     */
     'message' => [
 
+        /**
+         * Transform array message and object to message in publisher
+         */
         'factory' => \Plexikon\Reporter\Message\Factory\PublisherMessageFactory::class,
 
+        /**
+         * Serialize / Unserialize message
+         */
         'serializer' => \Plexikon\Reporter\Message\Serializer\DefaultMessageSerializer::class,
 
+        /**
+         * Serialize / Unserialize payload
+         */
         'payload_serializer' => \Plexikon\Reporter\Message\Serializer\DefaultPayloadSerializer::class,
 
+        /**
+         * Convert default class name to base class name
+         */
         'alias' => \Plexikon\Reporter\Message\Alias\DefaultMessageAlias::class,
 
+        /**
+         * Add mandatory headers to message
+         * @see \Plexikon\Reporter\Contracts\Message\MessageHeader
+         */
         'decorator' => [
             \Plexikon\Reporter\Message\Decorator\EventIdMessageDecorator::class,
             \Plexikon\Reporter\Message\Decorator\EventTypeMessageDecorator::class,
@@ -21,14 +47,31 @@ return [
             \Plexikon\Reporter\Message\Decorator\AsyncMarkerMessageDecorator::class,
         ],
 
+        /**
+         * Message Producer
+         * ---------------------------------------------
+         *
+         * Produce message sync/async depends on strategy
+         */
         'producer' => [
-            'default' => 'sync', // default is overridden per publisher producer if exists
+            /**
+             * Default can be override per publisher
+             */
+            'default' => 'sync',
 
+            /**
+             * Produce message async if message implement async contract
+             *
+             * @see \Plexikon\Reporter\Contracts\Message\AsyncMessage
+             */
             'per_message' => [
                 'queue' => null,
                 'connection' => null,
             ],
 
+            /**
+             * Dispatch all messages through async publisher
+             */
             'async_all' => [
                 'queue' => null,
                 'connection' => null,
@@ -36,11 +79,20 @@ return [
         ],
     ],
 
+    /**
+     * Publisher middleware
+     * ---------------------------------------------
+     *
+     * Merge with publisher decorators if exists
+     */
     'middleware' => [
         \Plexikon\Reporter\Publisher\Middleware\PublisherExceptionMiddleware::class,
-        \Plexikon\Reporter\Publisher\Middleware\CommandValidationMiddleware::class,
     ],
 
+    /**
+     * Publishers
+     * ---------------------------------------------
+     */
     'publisher' => [
 
         'command' => [
@@ -71,7 +123,7 @@ return [
 
         'query' => [
             'default' => [
-                'route_strategy' => 'per_message',
+                'route_strategy' => 'sync',
                 'message' => [
                     'decorator' => []
                 ],
