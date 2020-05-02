@@ -105,7 +105,7 @@ class ReporterDriverManager extends ReporterManager
         return new RoutableEventMiddleware($router, $producer);
     }
 
-    protected function createDefaultQueryRoutableMiddleware(array $pubConfig): Middleware
+    protected function createDefaultRoutableQueryMiddleware(array $pubConfig): Middleware
     {
         $router = $this->createDefaultSingleHandlerRouter(
             $pubConfig['map'],
